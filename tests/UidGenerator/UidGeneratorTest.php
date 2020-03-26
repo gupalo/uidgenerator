@@ -15,6 +15,14 @@ class UidGeneratorTest extends TestCase
         $this->assertRegExp('#^[a-f\d]{32}$#', UidGenerator::generate(32));
         $this->assertRegExp('#^[a-f\d]{8}$#', UidGenerator::generate(8));
         $this->assertRegExp('#^[a-f\d]{9}$#', UidGenerator::generate(9));
+
+        $uids = [];
+        for ($i = 0; $i < 100; $i++) {
+            $uids[] = UidGenerator::generate(32);
+        }
+        $uids = array_unique($uids);
+
+        $this->assertCount(100, $uids);
     }
 
     public function testHash(): void
@@ -26,6 +34,14 @@ class UidGeneratorTest extends TestCase
     public function testGenerateNumeric(): void
     {
         $this->assertRegExp('#^[\d]{10}$#', UidGenerator::generateNumeric(10));
+
+        $uids = [];
+        for ($i = 0; $i < 100; $i++) {
+            $uids[] = UidGenerator::generateNumeric(8);
+        }
+        $uids = array_unique($uids);
+
+        $this->assertCount(100, $uids);
     }
 
     public function testGenerateUnique(): void
