@@ -11,20 +11,6 @@ class UidGenerator
 {
     public static ?string $secret = 'replace_with_real_secret';
 
-    public static function generateUnique(UidRepositoryInterface $repository, int $length = 32): string
-    {
-        $infinity = 1000;
-        while ($infinity-- > 0) {
-            $uid = self::generate($length);
-
-            if ($repository->findOneByUid($uid) === null) {
-                return $uid;
-            }
-        }
-
-        throw new LogicException('Cannot generate unique uid');
-    }
-
     public static function generate(int $length = 32): string
     {
         for ($i = 0; $i < 100; $i++) {
@@ -51,6 +37,32 @@ class UidGenerator
         }
 
         return $result;
+    }
+
+    public static function generateUnique(UidRepositoryInterface $repository, int $length = 32, int $countTries = 1000): string
+    {
+        while ($countTries-- > 0) {
+            $uid = self::generate($length);
+
+            if ($repository->findOneByUid($uid) === null) {
+                return $uid;
+            }
+        }
+
+        throw new LogicException('Cannot generate unique uid');
+    }
+
+    public static function generateNumericUnique(UidRepositoryInterface $repository, int $length = 8, int $countTries = 1000): string
+    {
+        while ($countTries-- > 0) {
+            $uid = self::generateNumeric($length);
+
+            if ($repository->findOneByUid($uid) === null) {
+                return $uid;
+            }
+        }
+
+        throw new LogicException('Cannot generate unique uid');
     }
 
     /**

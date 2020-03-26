@@ -53,8 +53,7 @@ class UidGeneratorTest extends TestCase
 
         $repository->findOneByUid(Argument::type('string'))->shouldBeCalled(2)->willReturn($entity->reveal(), null);
 
-        UidGenerator::generateUnique($repository->reveal(), 32);
-        $this->assertRegExp('#^[a-f\d]{32}$#', UidGenerator::generate(32));
+        $this->assertRegExp('#^[a-f\d]{32}$#', UidGenerator::generateUnique($repository->reveal(), 32));
     }
 
     public function testGenerateUnique_CannotGenerate(): void
@@ -70,5 +69,32 @@ class UidGeneratorTest extends TestCase
         $repository->findOneByUid(Argument::type('string'))->shouldBeCalled(1000)->willReturn($entity->reveal());
 
         UidGenerator::generateUnique($repository->reveal(), 32);
+    }
+
+    public function testGenerateNumericUnique(): void
+    {
+        /** @var UidRepositoryInterface $repository */
+        $repository = $this->prophesize(UidRepositoryInterface::class);
+        /** @var UidEntityInterface $entity */
+        $entity = $this->prophesize(UidEntityInterface::class);
+
+        $repository->findOneByUid(Argument::type('string'))->shouldBeCalled(2)->willReturn($entity->reveal(), null);
+
+        $this->assertRegExp('#^[\d]{8}$#', UidGenerator::generateNumericUnique($repository->reveal(), 8));
+    }
+
+    public function testGenerateNumericUnique_CannotGenerate(): void
+    {
+        $this->expectException(\LogicException::class);
+        $this->expectExceptionMessage('Cannot generate unique uid');
+
+        /** @var UidRepositoryInterface $repository */
+        $repository = $this->prophesize(UidRepositoryInterface::class);
+        /** @var UidEntityInterface $entity */
+        $entity = $this->prophesize(UidEntityInterface::class);
+
+        $repository->findOneByUid(Argument::type('string'))->shouldBeCalled(1000)->willReturn($entity->reveal());
+
+        UidGenerator::generateNumericUnique($repository->reveal(), 32);
     }
 }
