@@ -7,6 +7,10 @@
         "php": ">=7.4",
         "ext-json": "*"
     },
+    "require-dev": {
+        "phpspec/prophecy-phpunit": "^2.0",
+        "phpunit/phpunit": "^9.1"
+    },
     "autoload": {
         "psr-4": {
             "Gupalo\\UidGenerator\\": "src/UidGenerator/"

@@ -1,20 +1,24 @@
-<?php
+<?php /** @noinspection PhpUndefinedMethodInspection */
 
 namespace Gupalo\Tests\UidGenerator;
 
 use Gupalo\UidGenerator\UidEntityInterface;
 use Gupalo\UidGenerator\UidGenerator;
 use Gupalo\UidGenerator\UidRepositoryInterface;
+use LogicException;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
+use Prophecy\PhpUnit\ProphecyTrait;
 
 class UidGeneratorTest extends TestCase
 {
+    use ProphecyTrait;
+
     public function testGenerate(): void
     {
-        $this->assertRegExp('#^[a-f\d]{32}$#', UidGenerator::generate(32));
-        $this->assertRegExp('#^[a-f\d]{8}$#', UidGenerator::generate(8));
-        $this->assertRegExp('#^[a-f\d]{9}$#', UidGenerator::generate(9));
+        $this->assertMatchesRegularExpression('#^[a-f\d]{32}$#', UidGenerator::generate(32));
+        $this->assertMatchesRegularExpression('#^[a-f\d]{8}$#', UidGenerator::generate(8));
+        $this->assertMatchesRegularExpression('#^[a-f\d]{9}$#', UidGenerator::generate(9));
 
         $uids = [];
         for ($i = 0; $i < 100; $i++) {
@@ -33,7 +37,7 @@ class UidGeneratorTest extends TestCase
 
     public function testGenerateNumeric(): void
     {
-        $this->assertRegExp('#^[\d]{10}$#', UidGenerator::generateNumeric(10));
+        $this->assertMatchesRegularExpression('#^[\d]{10}$#', UidGenerator::generateNumeric(10));
 
         $uids = [];
         for ($i = 0; $i < 100; $i++) {
@@ -53,12 +57,12 @@ class UidGeneratorTest extends TestCase
 
         $repository->findOneByUid(Argument::type('string'))->shouldBeCalled(2)->willReturn($entity->reveal(), null);
 
-        $this->assertRegExp('#^[a-f\d]{32}$#', UidGenerator::generateUnique($repository->reveal(), 32));
+        $this->assertMatchesRegularExpression('#^[a-f\d]{32}$#', UidGenerator::generateUnique($repository->reveal(), 32));
     }
 
     public function testGenerateUnique_CannotGenerate(): void
     {
-        $this->expectException(\LogicException::class);
+        $this->expectException(LogicException::class);
         $this->expectExceptionMessage('Cannot generate unique uid');
 
         /** @var UidRepositoryInterface $repository */
@@ -80,12 +84,12 @@ class UidGeneratorTest extends TestCase
 
         $repository->findOneByUid(Argument::type('string'))->shouldBeCalled(2)->willReturn($entity->reveal(), null);
 
-        $this->assertRegExp('#^[\d]{8}$#', UidGenerator::generateNumericUnique($repository->reveal(), 8));
+        $this->assertMatchesRegularExpression('#^[\d]{8}$#', UidGenerator::generateNumericUnique($repository->reveal(), 8));
     }
 
     public function testGenerateNumericUnique_CannotGenerate(): void
     {
-        $this->expectException(\LogicException::class);
+        $this->expectException(LogicException::class);
         $this->expectExceptionMessage('Cannot generate unique uid');
 
         /** @var UidRepositoryInterface $repository */
