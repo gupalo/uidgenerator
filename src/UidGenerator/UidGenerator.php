@@ -9,7 +9,7 @@ use Throwable;
 
 class UidGenerator
 {
-    public static $secret = 'replace_with_real_secret';
+    public static string $secret = 'replace_with_real_secret';
 
     public static function generate(int $length = 32): string
     {
@@ -65,14 +65,11 @@ class UidGenerator
         throw new LogicException('Cannot generate unique uid');
     }
 
-    /**
-     * @param string|JsonSerializable|array $item
-     */
-    public static function hash($item, int $passes = 100): string
+    public static function hash(array|string|JsonSerializable $item, int $passes = 100): string
     {
         if (!is_string($item)) {
             try {
-                $item = json_encode($item);
+                $item = json_encode($item, JSON_THROW_ON_ERROR);
             } catch (Throwable $e) {
                 $item = (string)$item;
             }
