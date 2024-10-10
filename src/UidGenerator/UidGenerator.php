@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection UnknownInspectionInspection */
 
 namespace Gupalo\UidGenerator;
 
@@ -9,7 +9,7 @@ use Throwable;
 
 class UidGenerator
 {
-    public static ?string $secret = 'replace_with_real_secret';
+    public static $secret = 'replace_with_real_secret';
 
     public static function generate(int $length = 32): string
     {
@@ -67,14 +67,12 @@ class UidGenerator
 
     /**
      * @param string|JsonSerializable|array $item
-     * @param int $passes
-     * @return string
      */
-    public static function hash($item, $passes = 100): string
+    public static function hash($item, int $passes = 100): string
     {
         if (!is_string($item)) {
             try {
-                $item = json_encode($item, JSON_THROW_ON_ERROR, 512);
+                $item = json_encode($item);
             } catch (Throwable $e) {
                 $item = (string)$item;
             }
